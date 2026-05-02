@@ -1,0 +1,29 @@
+{
+  "name": "cyber-os",
+  "version": "1.0.0",
+  "description": "Cyberpunk system dashboard with realtime monitoring, terminals, AI chat, and more",
+  "main": "src/main/index.js",
+  "author": "Cyber Engineers",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "backend": "node backend/server.js"
+  },
+  "dependencies": {
+    "electron": "^32.0.0",
+    "electron-reloader": "^1.2.3",
+    "node-pty": "^0.10.1",
+    "express": "^4.18.2",
+    "ws": "^8.17.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "linux-release-info": "^3.0.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.9.1"
+  }
+}
