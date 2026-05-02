@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# CYBER-OS Installation Script
+# xKOR_3RR0R Installation Script
 # For Arch Linux
 
 set -e
 
 echo "======================================"
-echo "   CYBER-OS System Installation"
+echo "   xKOR_3RR0R System Installation"
 echo "======================================"
 echo ""
 
@@ -53,7 +53,7 @@ chmod +x run.sh
 mkdir -p config
 
 # Create default config
-cat > config/cyber-os.config.json << 'EOF'
+cat > config/xkor-3rror.config.json << 'EOF'
 {
   "theme": "cyberpunk",
   "terminal": {
@@ -66,7 +66,7 @@ cat > config/cyber-os.config.json << 'EOF'
     "enabled": true
   },
   "web": {
-    "userAgent": "CYBER-OS/1.0"
+    "userAgent": "xKOR_3RR0R/2.1"
   },
   "display": {
     "fullscreen": true,
@@ -81,7 +81,7 @@ echo "======================================"
 echo "   Installation Complete!"
 echo "======================================"
 echo ""
-echo "To start CYBER-OS, run:"
+echo "To start xKOR_3RR0R, run:"
 echo "  ./run.sh"
 echo ""
 echo "NOTES:"

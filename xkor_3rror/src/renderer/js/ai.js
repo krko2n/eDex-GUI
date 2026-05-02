@@ -96,7 +96,10 @@ class AIPanel {
                 }
             }
             
-            this.addMessage('ai', 'Error: Could not connect to AI service. Make sure the backend is running.');
+            this.addMessage(
+                'ai',
+                '⚠ OFFLINE — No response from assistant service. AI features need a running backend on port 3001 and (optionally) network for external models. Core shell stays usable.'
+            );
         }
     }
     
@@ -119,7 +122,7 @@ class AIPanel {
     loadChatHistory() {
         // Load from localStorage if available
         try {
-            const savedHistory = localStorage.getItem('cyberOS-chatHistory');
+            const savedHistory = localStorage.getItem('xkor_3rror-chatHistory');
             if (savedHistory) {
                 this.messages = JSON.parse(savedHistory);
                 this.messages.forEach(msg => {
@@ -139,7 +142,7 @@ class AIPanel {
     
     saveChatHistory() {
         try {
-            localStorage.setItem('cyberOS-chatHistory', JSON.stringify(this.messages));
+            localStorage.setItem('xkor_3rror-chatHistory', JSON.stringify(this.messages));
         } catch (e) {
             console.log('Could not save chat history');
         }

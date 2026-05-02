@@ -1,12 +1,12 @@
-# CYBER-OS v1.0
+﻿# xKOR_3RR0R v2.1
 
 ## A Cyberpunk System Dashboard for Linux
 
-CYBER-OS is a production-ready, fullscreen cyberpunk system dashboard built with Electron and Node.js. It provides realtime system monitoring, multi-terminal support, AI chat integration, and a terminal-based web browser.
+xKOR_3RR0R is a production-ready, fullscreen cyberpunk system dashboard built with Electron and Node.js. It provides realtime system monitoring, multi-terminal support, AI chat integration, and a terminal-based web browser.
 
 ```
 ╔════════════════════════════════════════════════════════════════════════╗
-║                        CYBER-OS DASHBOARD                              ║
+║                        xKOR_3RR0R DASHBOARD                              ║
 ║  ┌──────────────┐ ┌──────────────────────┐ ┌──────────────────────┐   ║
 ║  │  SYSTEM INFO │ │   MAIN TERMINAL      │ │    AI ASSISTANT      │   ║
 ║  │              │ │  [TERM-1][TERM-2]... │ │  > Ask anything...   │   ║
@@ -103,8 +103,8 @@ CYBER-OS is a production-ready, fullscreen cyberpunk system dashboard built with
 ### Quick Install
 
 ```bash
-git clone https://github.com/yourusername/cyber-os.git
-cd cyber-os
+git clone https://github.com/yourusername/xkor_3rror.git
+cd xkor_3rror
 ./install.sh
 ./run.sh
 ```
@@ -163,7 +163,7 @@ The installation script automatically:
 
 ## Configuration
 
-Default config: `config/cyber-os.config.json`
+Default config: `config/xkor-3rror.config.json`
 
 ```json
 {
@@ -178,7 +178,7 @@ Default config: `config/cyber-os.config.json`
     "enabled": true
   },
   "web": {
-    "userAgent": "CYBER-OS/1.0"
+    "userAgent": "xkor_3rror/1.0"
   },
   "display": {
     "fullscreen": true,
@@ -267,7 +267,7 @@ export HOME="/home/username"
 ## Project Structure
 
 ```
-cyber-os/
+xkor_3rror/
 ├── install.sh              # Installation script
 ├── run.sh                  # Startup script
 ├── package.json            # Dependencies
@@ -300,7 +300,7 @@ cyber-os/
 │   └── (images, fonts if needed)
 │
 └── config/
-    └── cyber-os.config.json # Configuration file
+    └── xkor-3rror.config.json # Configuration file
 ```
 
 ---
@@ -468,7 +468,7 @@ Then add to `src/renderer/js/monitor.js` to display.
 
 ### Change Shell
 
-Edit `config/cyber-os.config.json`:
+Edit `config/xkor-3rror.config.json`:
 ```json
 {
   "terminal": {
@@ -516,7 +516,7 @@ export AI_API_ENDPOINT="http://192.168.1.100:11434/api/generate"
 ### Run in Dev Mode
 
 ```bash
-cd cyber-os
+cd xkor_3rror
 npm install
 npm run dev
 ```
@@ -543,7 +543,7 @@ npm run build
 
 ## License
 
-CYBER-OS v1.0 - MIT License
+xKOR_3RR0R v1.0 - MIT License
 
 Based on eDex-UI by GitSquared, significantly modified and enhanced.
 
@@ -557,7 +557,7 @@ For issues, questions, or contributions:
 Issues: GitHub Issues tracker
 Documentation: See README sections
 Code: src/ and backend/ directories
-Config: config/cyber-os.config.json
+Config: config/xkor-3rror.config.json
 ```
 
 ---
@@ -571,7 +571,7 @@ Config: config/cyber-os.config.json
 
 ---
 
-**CYBER-OS v1.0** - Ultimate Linux System Dashboard
+**xKOR_3RR0R v1.0** - Ultimate Linux System Dashboard
 
 *"The future is now"* ⚡
 

@@ -1,16 +1,16 @@
-# QUICK START GUIDE - CYBER-OS
+﻿# QUICK START GUIDE - xKOR_3RR0R
 
 ## 30-Second Setup
 
 ```bash
-git clone https://github.com/yourusername/cyber-os.git
-cd cyber-os
+git clone https://github.com/yourusername/xkor_3rror.git
+cd xkor_3rror
 chmod +x install.sh run.sh
 ./install.sh
 ./run.sh
 ```
 
-Done! CYBER-OS is now running.
+Done! xKOR_3RR0R is now running.
 
 ---
 
@@ -73,7 +73,7 @@ nmcli dev show
 ## Customization
 
 ### Change Terminal Shell
-Edit `config/cyber-os.config.json`:
+Edit `config/xkor-3rror.config.json`:
 ```json
 {
   "terminal": {
@@ -156,10 +156,10 @@ export SHELL=/bin/zsh
 ## Need Help?
 
 - Check README.md for detailed documentation
-- Review config/cyber-os.config.json for all options
+- Review config/xkor-3rror.config.json for all options
 - Check backend logs: `node backend/server.js --debug`
 - Run in dev mode: `npm run dev`
 
 ---
 
-**Enjoy CYBER-OS! Stay cyber. 🚀**
+**Enjoy xKOR_3RR0R! Stay cyber. 🚀**

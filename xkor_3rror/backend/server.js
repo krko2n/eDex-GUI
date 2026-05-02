@@ -385,7 +385,17 @@ setInterval(() => {
 }, 200);
 
 // Start server
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3001;
+
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Stop the other process or set PORT to a free port.`);
+    } else {
+        console.error('Server error:', err);
+    }
+    process.exit(1);
+});
+
 server.listen(PORT, () => {
     console.log(`xKOR_3RR0R Backend running on port ${PORT}`);
     console.log(`WebSocket listening on ws://localhost:${PORT}`);

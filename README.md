@@ -1,38 +1,40 @@
-# eDex-GUI
-Heavily inspired GUI on eDex-UI https://github.com/gitsquared/edex-ui
+# xKOR_3RR0R
 
-System Designation: xKOR_3RR0R
-Protocol Type: Volatile System Override
+Fullscreen cyberpunk-style system shell built with Electron, plain HTML/CSS/JS, and a local Node backend (WebSockets on port **3001**). Core UI loads from **`file://`** so it runs offline without Vite/webpack dev servers.
 
-Classification: [EXPERIMENTAL / UNSTABLE]
+Upstream visual inspiration includes [eDEX-UI](https://github.com/GitSquared/edex-ui). This fork is rebranded as **xKOR_3RR0R**.
 
-🛰️ Behind the Name
-The designation xKOR_3RR0R embraces the beauty of digital decay. It is named after the critical moment where a system pushes past its factory limits into a state of "functional failure."
+## Repository layout
 
-x: Experimental/External build identifier.
+- **`xkor_3rror/`** — application source (`package.json`, `run.sh`, `run.bat`, backend, Electron main + renderer).
 
-KOR: (Core). Represents the heart of the machine. It focuses on the most vital telemetry and system-wide diagnostics.
+## Quick start
 
-3RR0R: A nod to the Glitch-Art movement. It suggests that while the interface looks chaotic or "broken" to the untrained eye, it provides a deeper level of insight that standard operating systems cannot reach.
+**Linux / WSL:**
 
-🛠️ Implementation Snippet (Copy this for your README)
-If you want to add a cool "System Info" block at the top of your README, use this Markdown code:
+```bash
+cd xkor_3rror
+./install.sh   # optional; Arch-focused system deps
+npm install
+./run.sh
+```
 
-Markdown
-# xKRYP_T0X // eDex-GUI Extension
+Or: `npm run backend` in one terminal and `npm start` (Electron only) in another.
 
-> **"In the sprawl, data is the only currency. This is how you spend it."**
+**Windows:**
 
----
+```bat
+cd xkor_3rror
+npm install
+run.bat
+```
 
-### [ SYSTEM_INFO ]
-| Attribute | Value |
-| :--- | :--- |
-| **DESIGNATION** | xKRYP_T0X (v2.1.0) |
-| **KERNEL** | OSI-Tactical-Layer |
-| **ENCRYPTION** | 1024-BIT_SYMMETRIC |
-| **U_INTERFACE** | CYBER_DECK_EMULATOR |
-| **STATUS** | [ RUNNING / NO_ERRORS ] |
+Or: `npm run start:desktop` (starts backend child process, then Electron, and shuts down backend when Electron exits).
 
----
-Pro-Tip for your README:
+**Developer windowed mode:** `npm run dev` (opens DevTools; not fullscreen).
+
+## Architecture notes
+
+- **Single backend** binds **3001** (HTTP + WebSocket). Do not start `backend/server.js` twice; use `run.sh`, `run.bat`, or `npm run start:desktop` to avoid `EADDRINUSE`.
+- **Renderer** is static files under `xkor_3rror/src/renderer/`; Electron loads `index.html` directly.
+- **AI / web search** features may use the network; the shell and local monitoring should remain usable when offline or when the backend is still starting.

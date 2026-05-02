@@ -1,38 +1,63 @@
-// Utility functions
+// Utility functions — API + WebSocket to local backend only (offline-friendly shell)
+
 const API_BASE = 'http://localhost:3001/api';
 const WS_URL = 'ws://localhost:3001';
 
 let ws = null;
+let wsReconnectTimer = null;
+
+function clearWsReconnectTimer() {
+    if (wsReconnectTimer) {
+        clearTimeout(wsReconnectTimer);
+        wsReconnectTimer = null;
+    }
+}
 
 function initWebSocket(onConnect = null) {
+    clearWsReconnectTimer();
+
+    try {
+        if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+            if (ws.readyState === WebSocket.OPEN && onConnect) {
+                onConnect();
+            }
+            return Promise.resolve();
+        }
+    } catch (_) {}
+
     return new Promise((resolve) => {
         ws = new WebSocket(WS_URL);
-        
+
         ws.onopen = () => {
             console.log('WebSocket connected');
             if (onConnect) onConnect();
             resolve();
         };
-        
+
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === 'system-data') {
                 dispatchEvent(new CustomEvent('system-data', { detail: data.data }));
             }
         };
-        
+
         ws.onerror = (error) => {
             console.error('WebSocket error:', error);
         };
-        
+
         ws.onclose = () => {
-            console.log('WebSocket disconnected');
-            setTimeout(() => initWebSocket(), 3000);
+            ws = null;
+            console.log('WebSocket disconnected — retrying…');
+            if (!wsReconnectTimer) {
+                wsReconnectTimer = setTimeout(() => {
+                    wsReconnectTimer = null;
+                    initWebSocket();
+                }, 3000);
+            }
         };
     });
 }
 
-// Make it global
 window.initWebSocket = initWebSocket;
 
 function apiCall(endpoint, method = 'GET', data = null) {
@@ -40,14 +65,17 @@ function apiCall(endpoint, method = 'GET', data = null) {
         method,
         headers: { 'Content-Type': 'application/json' }
     };
-    
+
     if (data) {
         options.body = JSON.stringify(data);
     }
-    
+
     return fetch(`${API_BASE}${endpoint}`, options)
         .then(r => r.json())
-        .catch(e => console.error('API error:', e));
+        .catch(e => {
+            console.error('API error:', e);
+            return null;
+        });
 }
 
 function formatBytes(bytes) {
@@ -55,7 +83,7 @@ function formatBytes(bytes) {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
 function updateTime() {
@@ -69,33 +97,32 @@ function drawGraph(canvas, data, color = '#0f0', maxValue = 100) {
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
-    
+
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, width, height);
-    
+
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    
+
     const step = width / (data.length - 1 || 1);
-    
+
     for (let i = 0; i < data.length; i++) {
         const x = i * step;
         const y = height - (data[i] / maxValue) * height;
-        
+
         if (i === 0) {
             ctx.moveTo(x, y);
         } else {
             ctx.lineTo(x, y);
         }
     }
-    
+
     ctx.stroke();
-    
-    // Draw grid
+
     ctx.strokeStyle = 'rgba(0, 255, 0, 0.1)';
     ctx.lineWidth = 1;
-    
+
     for (let i = 0; i <= 5; i++) {
         const y = (height / 5) * i;
         ctx.beginPath();
@@ -108,9 +135,9 @@ function drawGraph(canvas, data, color = '#0f0', maxValue = 100) {
 function showContextMenu(x, y, items) {
     const menu = document.createElement('div');
     menu.className = 'context-menu';
-    menu.style.left = x + 'px';
-    menu.style.top = y + 'px';
-    
+    menu.style.left = `${x}px`;
+    menu.style.top = `${y}px`;
+
     items.forEach(item => {
         const menuItem = document.createElement('div');
         menuItem.className = 'context-menu-item';
@@ -121,12 +148,11 @@ function showContextMenu(x, y, items) {
         };
         menu.appendChild(menuItem);
     });
-    
+
     document.body.appendChild(menu);
-    
+
     document.addEventListener('click', () => menu.remove(), { once: true });
 }
 
-// Initialize time update
 setInterval(updateTime, 1000);
 updateTime();

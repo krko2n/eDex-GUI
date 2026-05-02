@@ -1,13 +1,13 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
-const isDev = require('electron-is-dev');
-const { spawn } = require('child_process');
+const { pathToFileURL } = require('url');
 const os = require('os');
 
 let mainWindow;
-let backendProcess;
 
-const isDevelopment = process.argv.includes('--dev') || isDev;
+const isDevelopment = process.argv.includes('--dev');
+
+app.setName('xKOR_3RR0R');
 
 async function createWindow() {
   mainWindow = new BrowserWindow({
@@ -22,11 +22,8 @@ async function createWindow() {
     }
   });
 
-  const startUrl = isDevelopment
-    ? 'http://localhost:3001'
-    : `file://${path.join(__dirname, '../renderer/index.html')}`;
-
-  mainWindow.loadURL(startUrl);
+  const indexPath = path.join(__dirname, '..', 'renderer', 'index.html');
+  mainWindow.loadURL(pathToFileURL(indexPath).href);
 
   if (isDevelopment) {
     mainWindow.webContents.openDevTools();
@@ -37,27 +34,8 @@ async function createWindow() {
   });
 }
 
-function startBackend() {
-  const backendPath = path.join(__dirname, '../../backend/server.js');
-  backendProcess = spawn('node', [backendPath], {
-    stdio: 'inherit',
-    shell: true
-  });
-
-  backendProcess.on('error', (err) => {
-    console.error('Backend error:', err);
-  });
-}
-
 app.on('ready', () => {
-  if (!process.env.CYBER_OS_BACKEND_STARTED) {
-    startBackend();
-    setTimeout(() => {
-      createWindow();
-    }, 1000);
-  } else {
-    createWindow();
-  }
+  createWindow();
 });
 
 app.on('window-all-closed', () => {
@@ -72,13 +50,6 @@ app.on('activate', () => {
   }
 });
 
-app.on('before-quit', () => {
-  if (backendProcess) {
-    backendProcess.kill();
-  }
-});
-
-// IPC handlers
 ipcMain.handle('get-platform', () => process.platform);
 ipcMain.handle('get-arch', () => process.arch);
 ipcMain.handle('get-cpus', () => os.cpus().length);
@@ -94,9 +65,7 @@ const createMenu = () => {
     },
     {
       label: 'View',
-      submenu: [
-        { role: 'toggleDevTools' }
-      ]
+      submenu: [{ role: 'toggleDevTools' }]
     }
   ];
 

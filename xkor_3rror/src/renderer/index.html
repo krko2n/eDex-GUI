@@ -7,16 +7,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- BOOT SCREEN -->
+    <!-- BOOT SCREEN (instant, file:// — no network) -->
     <div id="boot-screen">
+        <div class="boot-scanlines" aria-hidden="true"></div>
         <div class="boot-content">
             <div class="boot-logo">xKOR_3RR0R</div>
             <div id="boot-log" class="boot-log"></div>
-            <div id="boot-progress" class="boot-progress">
+            <pre id="boot-progress-line" class="boot-progress-line" aria-hidden="true">[<span id="progress-blocks">░░░░░░░░░░░░░░░░░░░░</span>] <span id="progress-text">0%</span></pre>
+            <div id="boot-progress" class="boot-progress-visual">
                 <div class="progress-bar">
                     <div id="progress-fill" class="progress-fill"></div>
                 </div>
-                <span id="progress-text">0%</span>
             </div>
         </div>
     </div>
