@@ -35,11 +35,18 @@ if ! kill -0 $BACKEND_PID 2>/dev/null; then
 fi
 
 echo "[*] Backend PID: $BACKEND_PID"
-echo "[*] Starting Electron shell (loads local renderer)..."
+echo "[*] Starting Electron shell (loads local renderer via file:)..."
+
+ELECTRON_BIN="$SCRIPT_DIR/node_modules/.bin/electron"
+if [ ! -f "$ELECTRON_BIN" ]; then
+    echo "ERROR: Electron CLI missing at $ELECTRON_BIN — run npm install in $SCRIPT_DIR"
+    exit 1
+fi
 
 cleanup() {
     echo ""
     echo "Shutting down xKOR_3RR0R..."
+    kill ${ELECTRON_PID:-} 2>/dev/null || true
     kill $BACKEND_PID 2>/dev/null || true
     wait $BACKEND_PID 2>/dev/null || true
     echo "xKOR_3RR0R terminated"
@@ -47,4 +54,9 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-npm start
+cd "$SCRIPT_DIR"
+# Run Electron binary directly — avoids stray npm wrappers and makes "double backend" clearer to debug.
+"$ELECTRON_BIN" . &
+ELECTRON_PID=$!
+
+wait "$ELECTRON_PID" || true

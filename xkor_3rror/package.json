@@ -9,7 +9,7 @@
     "start": "electron .",
     "start:desktop": "node scripts/start-desktop.js",
     "dev": "electron . --dev",
-    "build": "electron-builder",
+    "build": "npx --no-install electron-builder",
     "backend": "node backend/server.js"
   },
   "dependencies": {

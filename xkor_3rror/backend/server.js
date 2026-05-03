@@ -9,6 +9,40 @@ const path = require('path');
 const { spawn } = require('child_process');
 const axios = require('axios');
 
+/**
+ * Fail fast if Electron was mistakenly configured to run THIS file as the app "main"
+ * If package.json mistakenly sets "main" to backend/server.js, Electron runs this file twice
+ * (alongside `./run.sh` starting Node) → second listener on PORT and
+ * causes listen EADDRINUSE when run.sh already started the backend via plain Node:
+ * node backend/server.js & then npm start → electron loads server.js → second bind.
+ *
+ * Allowed: plain `node backend/server.js`, or Electron with `ELECTRON_RUN_AS_NODE=1`
+ * embedded tooling. Escape hatch: XKOR_ALLOW_BACKEND_IN_ELECTRON=1 (avoid in production).
+ */
+const runningUnderPlainNodeForBackend =
+    process.env.ELECTRON_RUN_AS_NODE === '1' ||
+    typeof process.versions?.electron !== 'string';
+
+if (
+    !runningUnderPlainNodeForBackend &&
+    require.main === module &&
+    process.env.XKOR_ALLOW_BACKEND_IN_ELECTRON !== '1'
+) {
+    console.error(`
+[xKOR_3RR0R] Refusing to start the HTTP/WebSocket backend inside Electron.
+
+Cause: package.json → "main" must point at the Electron main process script, usually:
+       "main": "src/main/index.js"
+       It must NOT be "backend/server.js".
+
+Start backend once from the shell:  node backend/server.js
+Launch UI:                          npm start / ./node_modules/.bin/electron .
+
+Or use ./run.sh which starts backend + Electron correctly.
+`);
+    process.exit(1);
+}
+
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });

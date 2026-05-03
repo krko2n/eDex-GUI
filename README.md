@@ -192,8 +192,11 @@ Base URL: `http://localhost:3001/api`
 
 | Problem | What to try |
 |---------|----------------|
-| **Port 3001 in use** | `lsof -i :3001` / `fuser -k 3001/tcp`; only one backend |
-| **Blank UI** | Use `./run.sh` or `run.bat`; renderer is `file://`, not `localhost:3000` |
+| **`EADDRINUSE` ::3001** | Only one backend. Check `package.json` → **`"main": "src/main/index.js"`** (never `backend/server.js`). `./run.sh` kills the port, then starts `node backend/server.js`, then `./node_modules/.bin/electron .` directly. Pull latest fixes or replace an old **`cyber-os`** tree. |
+| **Blank UI + `localhost:3000`** | Electron must **`loadFile` / `file://`** the renderer (`src/renderer/index.html`), not a webpack dev URL. Upgrade to current `src/main/index.js`. |
+| **Port 3001 in use** | `lsof -i :3001` / `fuser -k 3001/tcp` |
+| **`electron-builder: command not found`** | Run **`npm install`** without **`--omit=dev`** — `electron-builder` is a devDependency. Then **`npm run build`** (runs `npx --no-install electron-builder`). |
+| **npm audit (high)** | After full install: **`npm audit fix`** then **`npm audit`** again. |
 | **Backend exits** | `PORT=3001 node xkor_3rror/backend/server.js` from `xkor_3rror/` for logs |
 | **Arch deps** | Re-run `./install.sh` or `sudo pacman -Syu nodejs npm` etc. |
 
