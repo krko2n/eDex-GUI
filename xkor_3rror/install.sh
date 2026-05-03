@@ -47,7 +47,7 @@ echo "[5/6] Building Electron application (requires devDependencies, e.g. electr
 npm run build || echo "Build step failed or skipped — run 'npm run build' after install to package."
 
 echo "[6/6] Setting up permissions and configuration..."
-chmod +x run.sh
+chmod +x run.sh scripts/install-autostart.sh
 
 # Create config directory if needed
 mkdir -p config
@@ -83,6 +83,9 @@ echo "======================================"
 echo ""
 echo "To start xKOR_3RR0R, run:"
 echo "  ./run.sh"
+echo ""
+echo "Optional — start automatically when your desktop session starts (Arch / most DEs):"
+echo "  ./scripts/install-autostart.sh"
 echo ""
 echo "NOTES:"
 echo "  - First run may take a moment to start"

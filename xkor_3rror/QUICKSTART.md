@@ -155,7 +155,7 @@ export SHELL=/bin/zsh
 
 ## Need Help?
 
-- Check README.md for detailed documentation
+- See the repository root `README.md` for full documentation
 - Review config/xkor-3rror.config.json for all options
 - Check backend logs: `node backend/server.js --debug`
 - Run in dev mode: `npm run dev`
