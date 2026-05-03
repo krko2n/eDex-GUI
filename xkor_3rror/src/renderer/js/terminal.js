@@ -85,15 +85,12 @@ class TerminalManager {
             }
         }
         
-        // Listen for terminal data from backend
-        if (ws) {
-            ws.addEventListener('message', (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'terminal-output') {
-                    this.writeToTerminal(data.termId, data.output);
-                }
-            });
-        }
+        window.addEventListener('xkor-terminal-output', (event) => {
+            const data = event.detail;
+            if (data && data.type === 'terminal-output') {
+                this.writeToTerminal(data.termId, data.output);
+            }
+        });
         
         // Handle keyboard input in terminal
         document.addEventListener('keydown', (e) => {
@@ -144,12 +141,12 @@ class TerminalManager {
         
         if (char) {
             event.preventDefault();
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
+            if (typeof window.sendWsJson === 'function') {
+                window.sendWsJson({
                     type: 'terminal-input',
                     termId: termId,
                     data: char
-                }));
+                });
             }
             this.updateTerminalDisplay(termId);
         }

@@ -1,5 +1,6 @@
 /**
- * Starts backend (port 3001) then Electron. Single entry when not using run.sh / run.bat.
+ * Starts backend (port 3001) then Electron once. Use EITHER this script OR `./run.sh` on Linux —
+ * never start the backend twice (EADDRINUSE on 3001). Electron must not spawn `server.js`; `src/main/index.js` does not.
  * Exiting Electron sends SIGTERM to the backend child.
  */
 const path = require('path');

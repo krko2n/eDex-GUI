@@ -41,10 +41,10 @@ echo "npm $npm_version installed"
 
 echo "[4/6] Installing npm dependencies..."
 cd "$(dirname "$0")"
-npm install --production
+npm install
 
-echo "[5/6] Building Electron application..."
-npm run build || echo "Build step skipped (optional)"
+echo "[5/6] Building Electron application (requires devDependencies, e.g. electron-builder)..."
+npm run build || echo "Build step failed or skipped — run 'npm run build' after install to package."
 
 echo "[6/6] Setting up permissions and configuration..."
 chmod +x run.sh

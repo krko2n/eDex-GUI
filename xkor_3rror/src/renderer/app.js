@@ -45,30 +45,50 @@ class XkorDesktop {
         const progressBlocks = document.getElementById('progress-blocks');
         const progressPct = document.getElementById('progress-text');
 
+        const lineDelayMs = 120;
         const bootMessages = [
-            { line: '[ OK ] Initializing kernel modules...', pct: 12, accent: 'ok' },
-            { line: '[ OK ] Mounting encrypted volumes...', pct: 28, accent: 'ok' },
-            { line: '[ OK ] Loading neural interface...', pct: 44, accent: 'ok' },
-            { line: '[ OK ] Establishing secure WebSocket...', pct: 60, accent: 'ok' },
-            { line: '[ WAIT ] Connecting to AI core...', pct: 78, accent: 'wait' },
-            { line: '[ OK ] Local shell bridge ready.', pct: 92, accent: 'ok' },
-            { line: '[ OK ] xKOR_3RR0R interface armed.', pct: 100, accent: 'ok' }
+            { line: '[  OK  ] Initializing kernel modules...', pct: 20, accent: 'ok' },
+            { line: '[  OK  ] Mounting encrypted volumes...', pct: 40, accent: 'ok' },
+            { line: '[  OK  ] Loading neural interface drivers...', pct: 60, accent: 'ok' },
+            { line: '[  OK  ] Spawning WebSocket daemon on port 3001...', pct: 80, accent: 'ok' },
+            { line: '[ WAIT ] Connecting to AI core...', pct: 92, accent: 'wait' }
         ];
 
         let idx = 0;
 
         const updateProgress = (pct) => {
-            if (progressFill) progressFill.style.width = pct + '%';
-            if (progressBlocks) progressBlocks.textContent = buildAsciiBar(pct);
-            if (progressPct) progressPct.textContent = Math.round(pct) + '%';
+            const clamped = Math.max(0, Math.min(100, pct));
+            if (progressFill) progressFill.style.width = clamped + '%';
+            if (progressBlocks) progressBlocks.textContent = buildAsciiBar(clamped);
+            if (progressPct) progressPct.textContent = Math.round(clamped) + '%';
         };
 
-        const appendLine = (entry) => {
+        const appendLine = (entry, accentOverride) => {
             if (!bootLog) return;
+            const accent = accentOverride || entry.accent;
             const wrap = document.createElement('div');
-            wrap.className = `boot-line boot-line-${entry.accent}`;
-            wrap.textContent = entry.line;
+            wrap.className = `boot-line boot-line-${accent}`;
+            wrap.textContent = typeof entry === 'string' ? entry : entry.line;
             bootLog.appendChild(wrap);
+            bootLog.scrollTop = bootLog.scrollHeight;
+        };
+
+        const tryRevealOrOffline = () => {
+            window.tryBootWebSocket(
+                () => {
+                    updateProgress(100);
+                    this.finishBootReveal();
+                },
+                () => {
+                    appendLine(
+                        '[ WARN ] Backend unreachable — running in offline mode',
+                        'warn'
+                    );
+                    updateProgress(100);
+                    this.finishBootReveal();
+                },
+                5000
+            );
         };
 
         const step = () => {
@@ -77,24 +97,14 @@ class XkorDesktop {
                 appendLine(entry);
                 updateProgress(entry.pct);
                 idx++;
-                setTimeout(step, 380);
+                setTimeout(step, lineDelayMs);
                 return;
             }
 
-            const failOpen = setTimeout(() => {
-                const appEl = document.getElementById('app');
-                if (appEl && appEl.style.display !== 'flex') {
-                    console.warn('xKOR_3RR0R: backend not reachable yet — revealing shell');
-                    this.finishBootReveal();
-                }
-            }, 22000);
-
-            window.initWebSocket(() => {
-                clearTimeout(failOpen);
-                this.finishBootReveal();
-            });
+            tryRevealOrOffline();
         };
 
+        updateProgress(0);
         step();
     }
 

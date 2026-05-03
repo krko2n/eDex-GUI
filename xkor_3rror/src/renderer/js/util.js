@@ -13,6 +13,95 @@ function clearWsReconnectTimer() {
     }
 }
 
+function bindPersistingWsHandlers(activeWs) {
+    activeWs.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'system-data') {
+                dispatchEvent(new CustomEvent('system-data', { detail: data.data }));
+            } else if (data.type === 'terminal-output') {
+                window.dispatchEvent(new CustomEvent('xkor-terminal-output', { detail: data }));
+            }
+        } catch (_) {
+            /* ignore malformed frames */
+        }
+    };
+
+    activeWs.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+
+    activeWs.onclose = () => {
+        ws = null;
+        console.log('WebSocket disconnected — retrying…');
+        if (!wsReconnectTimer) {
+            wsReconnectTimer = setTimeout(() => {
+                wsReconnectTimer = null;
+                initWebSocket();
+            }, 3000);
+        }
+    };
+}
+
+/**
+ * Boot-time connection: resolve on first open within timeout, else invoke onTimeout (UI may continue offline).
+ * On timeout, begins the normal reconnect loop via initWebSocket().
+ */
+function tryBootWebSocket(onOpen, onTimeout, timeoutMs = 5000) {
+    clearWsReconnectTimer();
+
+    let settled = false;
+    const socket = new WebSocket(WS_URL);
+
+    const fail = () => {
+        if (settled) return;
+        settled = true;
+        try {
+            socket.close();
+        } catch (_) {
+            /* ignore */
+        }
+        ws = null;
+        initWebSocket();
+        if (typeof onTimeout === 'function') onTimeout();
+    };
+
+    const timer = setTimeout(() => {
+        if (socket.readyState === WebSocket.OPEN) return;
+        fail();
+    }, timeoutMs);
+
+    socket.onclose = () => {
+        if (settled) return;
+        clearTimeout(timer);
+        fail();
+    };
+
+    socket.onopen = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        ws = socket;
+        bindPersistingWsHandlers(ws);
+        if (typeof onOpen === 'function') onOpen();
+    };
+
+    socket.onerror = () => {
+        /* Refused/unreachable errors usually pair with onclose — fail() is idempotent */
+    };
+}
+
+window.tryBootWebSocket = tryBootWebSocket;
+
+function sendWsJson(payload) {
+    const body = typeof payload === 'string' ? payload : JSON.stringify(payload);
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(body);
+    }
+}
+
+window.sendWsJson = sendWsJson;
+
 function initWebSocket(onConnect = null) {
     clearWsReconnectTimer();
 
@@ -23,22 +112,18 @@ function initWebSocket(onConnect = null) {
             }
             return Promise.resolve();
         }
-    } catch (_) {}
+    } catch (_) {
+        /* continue */
+    }
 
     return new Promise((resolve) => {
         ws = new WebSocket(WS_URL);
 
         ws.onopen = () => {
             console.log('WebSocket connected');
+            bindPersistingWsHandlers(ws);
             if (onConnect) onConnect();
             resolve();
-        };
-
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'system-data') {
-                dispatchEvent(new CustomEvent('system-data', { detail: data.data }));
-            }
         };
 
         ws.onerror = (error) => {
@@ -71,8 +156,8 @@ function apiCall(endpoint, method = 'GET', data = null) {
     }
 
     return fetch(`${API_BASE}${endpoint}`, options)
-        .then(r => r.json())
-        .catch(e => {
+        .then((r) => r.json())
+        .catch((e) => {
             console.error('API error:', e);
             return null;
         });
@@ -138,7 +223,7 @@ function showContextMenu(x, y, items) {
     menu.style.left = `${x}px`;
     menu.style.top = `${y}px`;
 
-    items.forEach(item => {
+    items.forEach((item) => {
         const menuItem = document.createElement('div');
         menuItem.className = 'context-menu-item';
         menuItem.textContent = item.label;

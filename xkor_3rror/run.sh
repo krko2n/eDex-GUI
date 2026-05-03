@@ -18,6 +18,7 @@ fi
 
 PORT="${PORT:-3001}"
 echo "[*] Ensuring port $PORT is free (best effort)..."
+# Stale listener would cause EADDRINUSE when the new backend starts
 (command -v fuser >/dev/null 2>&1 && fuser -k "${PORT}/tcp" 2>/dev/null) || true
 (command -v lsof >/dev/null 2>&1 && lsof -ti:"${PORT}" | xargs -r kill -9 2>/dev/null) || true
 

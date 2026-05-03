@@ -1,12 +1,15 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
-const { pathToFileURL } = require('url');
 const os = require('os');
 
 let mainWindow;
 
 const isDevelopment = process.argv.includes('--dev');
 
+/**
+ * Backend (backend/server.js) must be started exactly once by run.sh or scripts/start-desktop.js.
+ * Do not spawn the backend from this process — a second listen on port 3001 causes EADDRINUSE.
+ */
 app.setName('xKOR_3RR0R');
 
 async function createWindow() {
@@ -23,7 +26,7 @@ async function createWindow() {
   });
 
   const indexPath = path.join(__dirname, '..', 'renderer', 'index.html');
-  mainWindow.loadURL(pathToFileURL(indexPath).href);
+  mainWindow.loadFile(indexPath);
 
   if (isDevelopment) {
     mainWindow.webContents.openDevTools();
