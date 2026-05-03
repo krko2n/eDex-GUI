@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xKOR_3RR0R</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- BOOT SCREEN (instant, file:// — no network) -->
+    <div id="boot-screen">
+        <div class="boot-scanlines" aria-hidden="true"></div>
+        <div class="boot-content">
+            <div class="boot-logo" aria-label="xKOR_3RR0R">xKOR_3RR0R</div>
+            <div id="boot-log" class="boot-log"></div>
+            <pre id="boot-progress-line" class="boot-progress-line" aria-hidden="true">[<span id="progress-blocks">░░░░░░░░░░░░░░░░░░░░</span>] <span id="progress-text">0%</span></pre>
+            <div id="boot-progress" class="boot-progress-visual">
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app" style="display: none;">
+        <!-- TOP BAR WITH TABS -->
+        <div class="topbar">
+            <div class="tabs">
+                <button class="tab active" data-tab="terminal">TERMINAL</button>
+                <button class="tab" data-tab="web">WEB</button>
+                <button class="tab" data-tab="monitor">MONITOR</button>
+                <button class="tab" data-tab="files">FILES</button>
+            </div>
+            <div class="status-info">
+                <span id="time">00:00:00</span>
+                <span id="status">ONLINE</span>
+            </div>
+        </div>
+
+        <!-- MAIN CONTAINER -->
+        <div class="container">
+            <!-- LEFT PANEL -->
+            <div class="left-panel">
+                <div class="panel-header">SYSTEM INFO</div>
+                <div class="panel-content">
+                    <div id="sysinfo" class="sysinfo">
+                        <div class="info-item">
+                            <span class="label">CPU:</span>
+                            <span id="cpu-usage" class="value">0%</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">RAM:</span>
+                            <span id="ram-usage" class="value">0%</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">TEMP:</span>
+                            <span id="temp-usage" class="value">0°C</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">NET:</span>
+                            <span id="net-usage" class="value">0MB/s</span>
+                        </div>
+                    </div>
+                    <canvas id="cpu-graph" class="graph"></canvas>
+                    <canvas id="ram-graph" class="graph"></canvas>
+                    <canvas id="temp-graph" class="graph"></canvas>
+                </div>
+            </div>
+
+            <!-- MAIN TERMINAL AREA -->
+            <div class="main-area">
+                <!-- Terminal Section -->
+                <div id="terminal-section" class="panel">
+                    <div class="panel-header">
+                        <div class="term-tabs">
+                            <button class="term-tab active" data-term="0">TERM-1</button>
+                            <button class="term-tab" data-term="1">TERM-2</button>
+                            <button class="term-tab" data-term="2">TERM-3</button>
+                        </div>
+                        <button class="btn-small" id="clear-term">CLR</button>
+                    </div>
+                    <div class="terminal-container">
+                        <div id="terminal-0" class="xterm"></div>
+                        <div id="terminal-1" class="xterm" style="display: none;"></div>
+                        <div id="terminal-2" class="xterm" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Web Browser Section -->
+                <div id="web-section" class="panel" style="display: none;">
+                    <div class="panel-header">
+                        <input type="text" id="web-url" placeholder="http://example.com" class="url-input">
+                        <button class="btn-small" id="web-go">GO</button>
+                    </div>
+                    <div class="web-container">
+                        <div id="web-content" class="web-content"></div>
+                    </div>
+                </div>
+
+                <!-- Monitor Section -->
+                <div id="monitor-section" class="panel" style="display: none;">
+                    <div class="panel-header">SYSTEM MONITOR</div>
+                    <div class="monitor-grid">
+                        <canvas id="large-cpu-graph" class="large-graph"></canvas>
+                        <canvas id="large-ram-graph" class="large-graph"></canvas>
+                        <canvas id="large-temp-graph" class="large-graph"></canvas>
+                        <canvas id="large-net-graph" class="large-graph"></canvas>
+                    </div>
+                </div>
+
+                <!-- Files Section -->
+                <div id="files-section" class="panel" style="display: none;">
+                    <div class="panel-header">FILE MANAGER</div>
+                    <div class="files-container">
+                        <div id="breadcrumb" class="breadcrumb"></div>
+                        <div id="file-list" class="file-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL - AI CHAT (F2 to toggle) -->
+            <div class="right-panel" id="ai-panel">
+                <div class="ai-header">
+                    <span>AI ASSISTANT</span>
+                    <button class="btn-close" id="close-ai">✕</button>
+                </div>
+                <div class="ai-content">
+                    <div id="chat-history" class="chat-history"></div>
+                    <div class="ai-input-area">
+                        <input type="text" id="ai-input" placeholder="Ask me anything...">
+                        <button id="ai-send" class="send-btn">SEND</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GLOBE (integrated in corner) -->
+            <div id="globe-widget" class="globe-widget">
+                <canvas id="globe-canvas" width="200" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- BOTTOM PANEL - KEYBOARD -->
+        <div class="bottom-panel">
+            <div class="keyboard-container" id="keyboard">
+                <!-- Keyboard will be generated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/util.js"></script>
+    <script src="js/monitor.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/filemanager.js"></script>
+    <script src="js/keyboard.js"></script>
+    <script src="js/globe.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/web.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

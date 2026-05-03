@@ -1,0 +1,29 @@
+{
+  "name": "xkor-3rror",
+  "version": "2.1.0",
+  "description": "xKOR_3RR0R — cyberpunk fullscreen dashboard with monitoring, terminals, AI chat",
+  "main": "src/main/index.js",
+  "author": "xKOR_3RR0R contributors",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "start:desktop": "node scripts/start-desktop.js",
+    "dev": "electron . --dev",
+    "build": "npx --no-install electron-builder",
+    "backend": "node backend/server.js"
+  },
+  "dependencies": {
+    "electron": "^32.0.0",
+    "node-pty": "^0.10.1",
+    "express": "^4.18.2",
+    "ws": "^8.18.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "axios": "^1.8.4",
+    "dotenv": "^16.4.5",
+    "linux-release-info": "^3.0.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.9.1"
+  }
+}
